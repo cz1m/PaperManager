@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加论文</title>
+    <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+</head>
+<body>
+<form th:action="@{/paper}" enctype="multipart/form-data" method="post">
+    <table>
+        <tr>
+            <th colspan="2">添加论文</th>
+        </tr>
+        <tr>
+            <td>标题</td>
+            <td><input type="text" name="title"></td>
+        </tr>
+        <tr>
+            <td>概览</td>
+            <td><input type="text" name="abstract"></td>
+        </tr>
+        <tr>
+            <td>页数</td>
+            <td><input type="text" name="pageNum"></td>
+        </tr>
+        <tr>
+            <td>成绩</td>
+            <td><input type="text" name="score"></td>
+        </tr>
+        <tr>
+            <td>作者</td>
+            <td><input type="text" name="author"></td>
+        </tr>
+        <tr>
+            <td>类型ID</td>
+            <td><input type="text" name="typeID"></td>
+        </tr>
+        <tr>
+            <td>专业ID</td>
+            <td><input type="text" name="majorID"></td>
+        </tr>
+        <tr>
+            <td>导师ID</td>
+            <td><input type="text" name="advisorID"></td>
+        </tr>
+        <tr>
+            <td>论文文件</td>
+            <td><input type="file" name="file"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="提交"></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

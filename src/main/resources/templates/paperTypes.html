@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>类型</title>
+  <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+</head>
+<body>
+<table>
+  <tr>
+    <th colspan="3">论文类型</th>
+  </tr>
+  <tr>
+    <th>流水号</th>
+    <th>名称</th>
+    <th><a th:href="@{/to/add}">添加</a> </th>
+  </tr>
+  <tr th:each="paperType,status:${paperTypes}">
+    <td th:text="${status.count}"></td>
+    <td th:text="${paperType.typeDescription}"></td>
+
+    <td >
+      <a href="">修改</a>
+      <a href="">删除</a>
+    </td>
+  </tr>
+
+</table>
+
+</body>
+</html>
