@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>修改论文信息</title>
-    <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+    <link rel="stylesheet" href="/css/index_work.css">
 </head>
 <body>
 <form th:action="@{/paper}" method="post" enctype="multipart/form-data">
@@ -34,16 +34,16 @@
             <td><input type="text" name="author" th:value="${paper.author}"></td>
         </tr>
         <tr>
-            <td>类型ID</td>
-            <td><input type="text" name="typeID" th:value="${paper.typeID}"></td>
+            <td>类型</td>
+            <td><input type="text" name="typeID" th:value="${paper.type}"></td>
         </tr>
         <tr>
-            <td>专业ID</td>
-            <td><input type="text" name="majorID" th:value="${paper.majorID}"></td>
+            <td>专业</td>
+            <td><input type="text" name="majorID" th:value="${paper.major}"></td>
         </tr>
         <tr>
-            <td>导师ID</td>
-            <td><input type="text" name="advisorID" th:value="${paper.advisorID}"></td>
+            <td>导师</td>
+            <td><input type="text" name="advisorID" th:value="${paper.advisor}"></td>
         </tr>
         <tr>
             <td>论文文件</td>

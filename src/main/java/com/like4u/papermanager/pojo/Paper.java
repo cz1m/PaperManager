@@ -23,6 +23,7 @@ public class Paper {
     private String major;
     private Integer pages;
     private Float score;
+    private String author;
     private String advisor;
     private String src;
     private Integer downloadTime;

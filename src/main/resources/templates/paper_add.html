@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>添加论文</title>
-    <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+    <link rel="stylesheet" href="/css/index_work.css">
 </head>
 <body>
 <form th:action="@{/paper}" enctype="multipart/form-data" method="post">
@@ -32,16 +32,16 @@
             <td><input type="text" name="author"></td>
         </tr>
         <tr>
-            <td>类型ID</td>
-            <td><input type="text" name="typeID"></td>
+            <td>类型</td>
+            <td><input type="text" name="type"></td>
         </tr>
         <tr>
-            <td>专业ID</td>
-            <td><input type="text" name="majorID"></td>
+            <td>专业</td>
+            <td><input type="text" name="major"></td>
         </tr>
         <tr>
-            <td>导师ID</td>
-            <td><input type="text" name="advisorID"></td>
+            <td>导师</td>
+            <td><input type="text" name="advisor"></td>
         </tr>
         <tr>
             <td>论文文件</td>

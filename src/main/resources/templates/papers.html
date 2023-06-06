@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>论文</title>
-    <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+    <link rel="stylesheet" href="/css/index_work.css">
 </head>
 <body>
 <div id="app">
 
     <table>
         <tr>
-            <th colspan="8">论文列表</th>
+            <th colspan="11">论文列表</th>
         </tr>
         <tr>
             <th>流水号</th>
             <th>标题</th>
             <th>概要</th>
+            <th>类型</th>
+            <th>专业</th>
             <th>页数</th>
             <th>成绩</th>
             <th>作者</th>
+            <th>导师</th>
             <th>下载次数</th>
             <th><a th:href="@{/papers/add}">添加</a> </th>
         </tr>
@@ -26,9 +29,12 @@
             <td th:text="${status.count}" ></td>
             <td  ><a th:text="${paper.title}" th:href="@{'/read/'+${paper.paperID}}"></a></td>
             <td th:text="${paper.Abstract}"></td>
+            <td th:text="${paper.type}"></td>
+            <td th:text="${paper.major}"></td>
             <td th:text="${paper.pages}"></td>
             <td th:text="${paper.score}"></td>
             <td th:text="${paper.author}"></td>
+            <td th:text="${paper.advisor}"></td>
             <td th:text="${paper.downloadTime}"></td>
             <td >
                 <a th:href="@{'/paper/'+${paper.paperID}}" >修改</a>
@@ -43,7 +49,7 @@
     </form>
 </div>
 
-<script type="text/javascript" th:src="@{/static/js/vue.js}"></script>
+<script type="text/javascript" src="/js/vue.js"></script>
 <script type="text/javascript">
     var vue=new Vue({
         el:"#app",
