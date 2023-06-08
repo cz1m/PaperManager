@@ -1,7 +1,10 @@
 package com.like4u.papermanager.Controller;
 
+import com.like4u.papermanager.Mapper.PaperMapper;
 import com.like4u.papermanager.Service.PaperService;
+import com.like4u.papermanager.pojo.Page;
 import com.like4u.papermanager.pojo.Paper;
+import com.oracle.webservices.internal.impl.encoding.StreamDecoderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.ArrayList;
@@ -26,11 +32,25 @@ public class PaperController {
     public String index(){
         return "index";
     }
+
+    //测试用
+    @GetMapping("getCookie")
+    @ResponseBody
+    public String getCookie(HttpServletResponse response){
+        Cookie cookie=new Cookie("username","987987987");
+        cookie.setMaxAge(3600);
+        response.addCookie(cookie);
+        return "set cookie success!";
+    }
+    //测试用注解
+    @ResponseBody
     @GetMapping("/paper")
-    public String getPaper(Model model){
+    public Page getPaper(Model model){
         List<Paper> papers= paperService.getAllPaper();
+        Page page = paperService.getPaperPage();
         model.addAttribute("papers",papers);
-        return "papers";
+        return page;
+        //return "papers";
     }
 
     @RequestMapping("/papers/add")
@@ -59,15 +79,28 @@ public class PaperController {
         return "redirect:/paper";
 
     }
+    //点击修改按钮跳转到用户的论文
+    @GetMapping("/paper/update")
+    //测试用注解，
+    @ResponseBody
+    public List<Paper> toUpdate(Model model,
+                           @CookieValue("username")String uid){
+        List<Paper> papers= paperService.getUserByUid(uid);
+        model.addAttribute("papers",papers);
+        return papers;
+    }
+
 
 
     //按照id查询
     @GetMapping("/paper/{id}")
-    public String getPaperById(@PathVariable("id") Integer id,Model model){
+    public String getPaperById(@PathVariable("id") Integer id,
+                               Model model){
         Paper paper= paperService.getPaperById(id);
         model.addAttribute("paper",paper);
 
-        return "paper_update";
+            return "paper_update";
+
     }
     //修改paper
     @PutMapping("/paper")
@@ -90,6 +123,10 @@ public class PaperController {
         paperService.updatePaper(paper);
         return "redirect:/paper";
     }
+
+
+
+
     //删除paper
     @DeleteMapping("/paper/{id}")
     public String deletePaper(@PathVariable("id") Integer id){
@@ -203,7 +240,23 @@ public class PaperController {
     public String paperInfo(Model model){
         //todo:获取及格的（60-85）的论文数量，优秀 的论文数量>=85,论文总数
         Long CPaper=paperService.getCPaper();
+        Long PaperNum= paperService.getPaperNum();
+        model.addAttribute("CPaper",CPaper);
+
         return "PaperInfo";
+    }
+
+    //根据//title,author,teacher进行条件查询
+    @ResponseBody
+    @PostMapping("/paper/search")
+    public List<Paper> searchPaper(@RequestParam(required = false) String title,
+                              @RequestParam(required = false) String author,
+                              @RequestParam(required = false) String teacher){
+
+        List<Paper> papers= paperService.searchPaper(title,author,teacher);
+
+        return papers;
+
     }
 
 

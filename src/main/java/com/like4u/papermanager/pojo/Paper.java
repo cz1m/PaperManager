@@ -27,5 +27,6 @@ public class Paper {
     private String advisor;
     private String src;
     private Integer downloadTime;
+    private String uid;
 
 }
