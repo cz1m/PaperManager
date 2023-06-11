@@ -1,7 +1,7 @@
 package com.like4u.papermanager.Service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.like4u.papermanager.pojo.Page;
+import com.like4u.papermanager.pojo.Pages;
 import com.like4u.papermanager.pojo.Paper;
 
 import java.util.List;
@@ -26,10 +26,14 @@ public interface PaperService extends IService<Paper> {
     Long getPaperNum();
 
 
-    List<Paper> searchPaper(String title, String author, String teacher);
+    Pages searchPaper(String title, String author, String teacher,Integer page);
 
 
     List<Paper> getUserByUid(String uid);
 
-    public Page getPaperPage();
+    public Pages getPaperPage();
+
+    List<Paper> getPaperByPage(Integer page);
+
+    Long getTotalBNum();
 }

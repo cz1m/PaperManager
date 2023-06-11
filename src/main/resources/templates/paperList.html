@@ -22,7 +22,7 @@
     <th>指导老师</th>
     <th><a th:href="@{/to/add}">添加</a> </th>
   </tr>
-  <tr th:each="paper,status:${page.list}">
+  <tr th:each="paper,status:${pages.list}">
     <td th:text="${status.count}"></td>
     <td th:text="${paper.title}"></td>
     <td th:text="${paper.Abstract}"></td>
@@ -41,16 +41,16 @@
 </table>
 
 <div style="text-align: center;">
-  <a th:if="${page.hasPreviousPage}" th:href="@{/paper/page/1}">首页</a>
-  <a th:if="${page.hasPreviousPage}" th:href="@{'/paper/page/'+${page.prePage}}">上一页</a>
-  <span th:each="num:${page.navigatepageNums}">
-    <a th:if="${page.pageNum==num}" style="color: #FF4400" th:text="${num}" th:href="@{'/employee/page/'+${num}}"></a>
-    <a th:if="${page.pageNum!=num}" th:text="${num}" th:href="@{'/paper/page/'+${num}}"></a>
+  <a th:if="${pages.hasPreviousPage}" th:href="@{/paper/pages/1}">首页</a>
+  <a th:if="${pages.hasPreviousPage}" th:href="@{'/paper/pages/'+${pages.prePage}}">上一页</a>
+  <span th:each="num:${pages.navigatepageNums}">
+    <a th:if="${pages.pageNum==num}" style="color: #FF4400" th:text="${num}" th:href="@{'/employee/pages/'+${num}}"></a>
+    <a th:if="${pages.pageNum!=num}" th:text="${num}" th:href="@{'/paper/pages/'+${num}}"></a>
 
   </span>
 
-  <a th:if="${page.hasNextPage}" th:href="@{'/paper/page/'+${page.nextPage}}">下一页</a>
-  <a th:if="${page.hasNextPage}" th:href="@{'/paper/page/'+${page.pages}}">尾页</a>
+  <a th:if="${pages.hasNextPage}" th:href="@{'/paper/pages/'+${pages.nextPage}}">下一页</a>
+  <a th:if="${pages.hasNextPage}" th:href="@{'/paper/pages/'+${pages.pages}}">尾页</a>
 
 </div>
 </body>

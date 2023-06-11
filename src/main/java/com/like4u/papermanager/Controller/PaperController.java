@@ -1,10 +1,9 @@
 package com.like4u.papermanager.Controller;
 
-import com.like4u.papermanager.Mapper.PaperMapper;
 import com.like4u.papermanager.Service.PaperService;
-import com.like4u.papermanager.pojo.Page;
+import com.like4u.papermanager.pojo.Pages;
 import com.like4u.papermanager.pojo.Paper;
-import com.oracle.webservices.internal.impl.encoding.StreamDecoderImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,11 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -45,13 +42,30 @@ public class PaperController {
     //测试用注解
     @ResponseBody
     @GetMapping("/paper")
-    public Page getPaper(Model model){
+    public Pages getPaper(Model model){
         List<Paper> papers= paperService.getAllPaper();
-        Page page = paperService.getPaperPage();
+        Pages pages = paperService.getPaperPage();
         model.addAttribute("papers",papers);
-        return page;
+        return pages;
         //return "papers";
     }
+
+
+    //分页查询
+    @ResponseBody
+    @GetMapping("/paper/page")
+    public Pages getPaperByPage(@RequestParam(required = false) Integer page) {
+        List<Paper> papers;
+        if(page==null){
+            papers = paperService.getPaperByPage(0);
+        }else {
+            papers=paperService.getPaperByPage(page);//获取到page页 的论文信息
+             }
+        Long Num = paperService.getTotalBNum();
+        Pages pages=new Pages(papers,Num);
+        return pages;
+    }
+
 
     @RequestMapping("/papers/add")
     public String toAdd(){
@@ -115,14 +129,21 @@ public class PaperController {
         if (!file.exists()){
             file.mkdir();
         }
-
         //src
         String finalPath =paperPath+File.separator+filename;
         multipartFile.transferTo(new File(finalPath));
         paper.setSrc(finalPath);
+
         paperService.updatePaper(paper);
         return "redirect:/paper";
     }
+    @PutMapping("/papers")
+    @ResponseBody
+    public String updatePaper(Paper paper){
+        paperService.updatePaper(paper);
+        return "success";
+    }
+
 
 
 
@@ -249,13 +270,22 @@ public class PaperController {
     //根据//title,author,teacher进行条件查询
     @ResponseBody
     @PostMapping("/paper/search")
-    public List<Paper> searchPaper(@RequestParam(required = false) String title,
+    public Pages searchPaper(@RequestParam(required = false) String title,
                               @RequestParam(required = false) String author,
-                              @RequestParam(required = false) String teacher){
+                              @RequestParam(required = false) String teacher,
+                             @RequestParam(required = false)Integer page){
+        Pages pages;
 
-        List<Paper> papers= paperService.searchPaper(title,author,teacher);
+        if (page==null){
+             pages = paperService.searchPaper(title, author, teacher, 0);
+        }else {
+             pages = paperService.searchPaper(title, author, teacher, page);
+        }
 
-        return papers;
+        //List<Paper> papers= paperService.searchPaper(title,author,teacher,page);
+
+
+        return pages;
 
     }
 

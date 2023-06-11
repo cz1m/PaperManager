@@ -1,17 +1,17 @@
 package com.like4u.papermanager.Service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.like4u.papermanager.Mapper.PaperMapper;
 import com.like4u.papermanager.Service.PaperService;
-import com.like4u.papermanager.pojo.Page;
+import com.like4u.papermanager.pojo.Pages;
 import com.like4u.papermanager.pojo.Paper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+
 
 import java.util.List;
 
@@ -26,14 +26,14 @@ private PaperMapper paperMapper;
 
         return papers;
     }
-    public Page getPaperPage() {
+    public Pages getPaperPage() {
         LambdaQueryWrapper<Paper> wrapper=new LambdaQueryWrapper<>();
 
         List<Paper> papers = paperMapper.selectList(null);
         Long num = paperMapper.selectCount(null);
-        Page page =new Page(papers,num);
+        Pages pages =new Pages(papers,num);
 
-        return page;
+        return pages;
     }
 
     @Override
@@ -76,7 +76,7 @@ private PaperMapper paperMapper;
     @Override
     public Long getCPaper() {
         LambdaQueryWrapper<Paper>wrapper=new LambdaQueryWrapper<>();
-        wrapper.le(Paper::getScore,60).gt(Paper::getScore,85);
+        wrapper.le(Paper::getScore,85).gt(Paper::getScore,60);
         Long CPaper = paperMapper.selectCount(wrapper);
 
         return CPaper ;
@@ -91,13 +91,18 @@ private PaperMapper paperMapper;
     }
 
     @Override
-    public List<Paper> searchPaper(String title, String author, String teacher) {
+    public Pages searchPaper(String title, String author, String teacher,Integer page) {
+        Page<Paper> searchPage=new Page<>(page,10);
         LambdaQueryWrapper<Paper> wrapper =new LambdaQueryWrapper<>();
         wrapper.eq(StringUtils.hasLength(title),Paper::getTitle,title)
                 .eq(StringUtils.hasLength(author),Paper::getAuthor,author)
                 .eq(StringUtils.hasLength(teacher),Paper::getAdvisor,teacher);
-        List<Paper> papers = paperMapper.selectList(wrapper);
-        return papers;
+        //List<Paper> papers = paperMapper.selectList(wrapper);
+        Page<Paper> paperPage = paperMapper.selectPage(searchPage, wrapper);
+        List<Paper> papers=paperPage.getRecords();//当前页的用户信息
+        Long num = paperMapper.selectCount(wrapper);//总共根据条件能查出多少数据
+        Pages pages =new Pages(papers,num);
+        return pages;
     }
 
     //根据uid查papers
@@ -112,4 +117,22 @@ private PaperMapper paperMapper;
     }
 
 
+    /**
+     * 分页查询
+     * */
+    @Override
+    public List<Paper> getPaperByPage(Integer pagenum) {
+        Page<Paper> page=new Page<>(pagenum,10);
+        LambdaQueryWrapper<Paper> wrapper=new LambdaQueryWrapper<>();
+        Page<Paper> page1 = paperMapper.selectPage(page, wrapper);
+        List<Paper> papers=page1.getRecords();
+        return papers;
+    }
+
+    @Override
+    public Long getTotalBNum() {
+        Long num = paperMapper.selectCount(null);
+        return num;
+
+    }
 }

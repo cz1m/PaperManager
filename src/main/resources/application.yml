@@ -8,15 +8,40 @@ spring:
     url: jdbc:mysql:///ssm?serverTimezone=UTC
     username: root
     password: 123456
+    druid:
+      aop-patterns: com.like4u.papermanager
+      filters: stat,wall
+      stat-view-servlet:
+        enabled: true
+        login-password: 123456
+        login-username: admin
+        reset-enable: false
+
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+      filter:
+        stat:
+          enabled: true
+          slow-sql-millis: 1000
+          log-slow-sql: true
+        wall:
+          enabled: true
+          config:
+            drop-table-allow: false
+
   mvc:
     hiddenmethod:
       filter:
         enabled: true
 
+
+
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
 

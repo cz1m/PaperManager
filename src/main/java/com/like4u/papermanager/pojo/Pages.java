@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Page {
+public class Pages {
     private List<Paper> papers;
     private Long total;
 
