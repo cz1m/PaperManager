@@ -3,7 +3,10 @@ package com.like4u.papermanager.Service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.like4u.papermanager.pojo.Pages;
 import com.like4u.papermanager.pojo.Paper;
+import com.like4u.papermanager.pojo.PaperDownload;
+import com.like4u.papermanager.pojo.TongJi;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PaperService extends IService<Paper> {
@@ -36,4 +39,15 @@ public interface PaperService extends IService<Paper> {
     List<Paper> getPaperByPage(Integer page);
 
     Long getTotalBNum();
+
+    void saveDownload(String username, LocalDateTime downloadTime, Integer id);
+
+    void saveDownload(PaperDownload paperDownload);
+
+    List<PaperDownload> selectDownload(Integer id);
+
+    Pages searchByMajor(String major,Integer page);
+
+    Pages rankByDownload(Integer page);
+    public TongJi tongJi();
 }

@@ -7,4 +7,42 @@
         update papers set downloadTime=downloadTime+1 where paperID=#{id}
     </update>
 
+    <select id="rankByDownload" resultType="com.like4u.papermanager.pojo.Paper">
+        select u.school,p.score from paper order by downloadTime desc limit #{page},10;
+    </select>
+    <!--查询所有-->
+    <select id="searchSchool" resultMap="schoolPaper" >
+        select * from paper p right join user u on p.uid=u.username
+        where u.school=#{school}  ;
+    </select>
+
+<!--查询总量-->
+    <select id="getCount" resultType="java.lang.Float">
+        select count(*) from paper p right join user u on p.uid=u.username
+        where u.school= #{school} ;
+    </select>
+<!--查询所有
+    <select id="papernum" resultMap="schoolPaper" >
+        select count(*) from paper p right join user u on p.uid=u.username
+        where u.school=#{school}  ;
+    </select>-->
+    <!--优秀数量-->
+    <select id="getYouXiu" resultType="java.lang.Float">
+        select count(*) from paper p
+         right join user u on p.uid=u.username
+        where u.school=#{school} and p.score>=85;
+    </select>
+<!--及格数量-->
+    <select id="getJiGe" resultType="java.lang.Float">
+        select count(*) from paper p
+        right join user u on p.uid=u.username
+        where u.school=#{school} and  p.score > 60 and p.score <![CDATA[< ]]> 85;
+    </select>
+
+
+    <resultMap id="schoolPaper" type="com.like4u.papermanager.pojo.School">
+        <collection property="paper" javaType="com.like4u.papermanager.pojo.Paper">
+        </collection>
+    </resultMap>
+
 </mapper>

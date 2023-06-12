@@ -4,6 +4,12 @@ import com.like4u.papermanager.Service.PaperService;
 import com.like4u.papermanager.pojo.Pages;
 import com.like4u.papermanager.pojo.Paper;
 
+import com.like4u.papermanager.pojo.PaperDownload;
+import com.like4u.papermanager.pojo.TongJi;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +25,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -156,68 +165,76 @@ public class PaperController {
         return "redirect:/paper";
 
     }
+/**
+ * 在线阅读
+ * */
+    @GetMapping("/readonline/{id}")
+    @ResponseBody
+    public String  test(@PathVariable("id")Integer id) throws IOException{
 
-    //在线阅读
-    @GetMapping("/read/{id}")
-    public String readPaper(@PathVariable("id")Integer id,Model model){
         String src = paperService.getSrcByID(id);
-        if (src != null) {
-            String fileContent = readFileContent(src);
-            model.addAttribute("fileContent", fileContent);
-        }
+        String finalsrc="./thieise/"+src;
+        File file=new File(finalsrc);
+        System.out.println(file.exists()+"文件名"+file.getName());
 
-        return "readPaper";
+        FileInputStream fileInputStream = new FileInputStream(file);
+        XWPFDocument xwpfDocument=new XWPFDocument(fileInputStream);
+        XWPFWordExtractor xwpfWordExtractor=new XWPFWordExtractor(xwpfDocument);
+        String text = xwpfWordExtractor.getText();
+        System.out.println(text);
+        return text;
+
     }
-    private String readFileContent(String filePath) {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return content.toString();
-    }
+
 
     //下载
-    @RequestMapping("/download/{id}")
-    public ResponseEntity<byte[]> testResponseEntity(HttpSession session, @PathVariable("id")Integer id) throws
+    @RequestMapping("/download/d")
+    public ResponseEntity<byte[]> testResponseEntity(HttpSession session,
+                                                     @RequestBody Paper paper,
+                                                     @CookieValue("username") String username) throws
             IOException {
         /*
          *查看论文下载用户与时间
          * 1.获取sessionId(获取下载的用户)
          * 2.下载数量+1
          * 3.获取下载时间
-         * 4.在userPaper表中添加数据
+         * 4.在Paper表中添加数据
          *
          *
          * */
-        //获取当前时间作为下载时间
-        //LocalDateTime downloadTime=LocalDateTime.now();
+        Integer id = paper.getPaperID();
 
-        String sessionId = session.getId();
+        //获取当前时间作为下载时间
+        LocalDateTime downloadTime=LocalDateTime.now();
+        Date date = Date.from(downloadTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        //String sessionId = session.getId();
 
         //记录下载次数
         paperService.countDownload(id);
 
-        //获取下载用户
-        //Integer userID=UserService.getUserID();
+        //获取下载用户 username
 
-        //将信息加入userPaper表
-        //userPaperService.insert(downloadTime,userID,id);
 
+        //将信息加入userdownload表;username,time,paperID
+        PaperDownload paperDownload=new PaperDownload(null,id,username,date);
+       // paperService.saveDownload(username,downloadTime,id);
+        paperService.saveDownload(paperDownload);
+
+/**
+ * 下载
+ * */
 
 //获取ServletContext对象
         ServletContext servletContext = session.getServletContext();
         //获取服务器文件
         String src = paperService.getSrcByID(id);
-
+        String finalsrc="thesis/"+src;
+        String name = new File(finalsrc).getName();
 
 
 //创建输入流
-        InputStream is = new FileInputStream(src);
+        InputStream is = new FileInputStream(finalsrc);
 //创建字节数组
         byte[] bytes = new byte[is.available()];
 //将流读到字节数组中
@@ -225,7 +242,7 @@ public class PaperController {
 //创建HttpHeaders对象设置响应头信息
         MultiValueMap<String, String> headers = new HttpHeaders();
 //设置要下载方式以及下载文件的名字
-        headers.add("Content-Disposition", "attachment;filename=1.txt");
+        headers.add("Content-Disposition", "attachment;filename="+name);
 //设置响应状态码
         HttpStatus statusCode = HttpStatus.OK;
 //创建ResponseEntity对象
@@ -235,6 +252,34 @@ public class PaperController {
         is.close();
         return responseEntity;
     }
+
+    @GetMapping("/download")
+    @ResponseBody
+    public List<PaperDownload>  selectDownloadMsg(@RequestBody Paper paper){
+        Integer paperID = paper.getPaperID();
+        List<PaperDownload>downloads= paperService.selectDownload(paperID);
+        return downloads;
+    }
+
+
+    /**
+     *
+     * 下载次数排行*/
+    @GetMapping("/rank")
+    @ResponseBody
+    public Pages rank(@RequestParam(required = false)Integer page){
+        Pages pages;
+        if (page==null){
+            pages= paperService.rankByDownload(0);
+        }
+        else { int num=(page-1)*10;
+            pages= paperService.rankByDownload(num);
+        }
+
+        return pages;
+    }
+
+
 
 
     //上传文件
@@ -270,22 +315,46 @@ public class PaperController {
     //根据//title,author,teacher进行条件查询
     @ResponseBody
     @PostMapping("/paper/search")
-    public Pages searchPaper(@RequestParam(required = false) String title,
-                              @RequestParam(required = false) String author,
-                              @RequestParam(required = false) String teacher,
-                             @RequestParam(required = false)Integer page){
+    public Pages searchPaper(@RequestBody Paper paper){
         Pages pages;
+        System.out.println(paper);
 
-        if (page==null){
-             pages = paperService.searchPaper(title, author, teacher, 0);
+        if (paper.getPage()==null){
+             pages = paperService.searchPaper(paper.getTitle(), paper.getType(),paper.getAdvisor(), 0);
+            System.out.println("错误的方法");
+
         }else {
-             pages = paperService.searchPaper(title, author, teacher, page);
+             pages = paperService.searchPaper(paper.getTitle(), paper.getType(),paper.getAdvisor(), paper.getPage());
         }
 
         //List<Paper> papers= paperService.searchPaper(title,author,teacher,page);
 
 
         return pages;
+
+    }
+
+
+    /**
+     * 分专业查询
+     * */
+    @GetMapping("/searchByMajor")
+    @ResponseBody
+    public Pages searchByMajor(@RequestParam()String major,
+                               @RequestParam(required = false) Integer page ){
+        Pages pages;
+        if (page!=null){
+            pages= paperService.searchByMajor(major,page);
+        }else { pages= paperService.searchByMajor(major,1);}
+        return pages;
+    }
+
+    @GetMapping("/school")
+    @ResponseBody
+    public TongJi searchBySchool(){
+
+        TongJi tongJi = paperService.tongJi();
+        return tongJi;
 
     }
 

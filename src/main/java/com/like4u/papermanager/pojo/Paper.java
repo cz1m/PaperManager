@@ -28,5 +28,7 @@ public class Paper {
     private String src;
     private Integer downloadTime;
     private String uid;
+    @TableField(exist = false)
+    private Integer page;
 
 }

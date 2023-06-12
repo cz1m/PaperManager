@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * 自定义的异常解析器
  * */
+/*
 @Component
 public class CustomerHandlerExceptionResolver implements HandlerExceptionResolver {
     @Override
@@ -22,3 +23,4 @@ public class CustomerHandlerExceptionResolver implements HandlerExceptionResolve
         return new ModelAndView();
     }
 }
+*/
