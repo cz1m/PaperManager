@@ -11,6 +11,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,8 @@ import java.util.List;
 public class PaperController {
     @Autowired
     private PaperService paperService;
+    @Autowired
+    private RedisTemplate redisTemplate;
     @RequestMapping("/")
     public String index(){
         return "index";
@@ -49,13 +52,15 @@ public class PaperController {
         return "set cookie success!";
     }
     //测试用注解
-    @ResponseBody
+    /**
+     * 查询全部
+     * */
     @GetMapping("/paper")
-    public Pages getPaper(Model model){
+    public String getPaper(Model model){
         List<Paper> papers= paperService.getAllPaper();
-        Pages pages = paperService.getPaperPage();
+        //Pages pages = paperService.getPaperPage();
         model.addAttribute("papers",papers);
-        return pages;
+        return "papers";
         //return "papers";
     }
 
@@ -74,6 +79,10 @@ public class PaperController {
         Pages pages=new Pages(papers,Num);
         return pages;
     }
+
+
+
+
 
 
     @RequestMapping("/papers/add")
@@ -358,5 +367,16 @@ public class PaperController {
 
     }
 
+
+    /**
+     *
+     * 测试redis
+     * */
+    @GetMapping("/redis")
+    @ResponseBody
+    public String testRedis(){
+        return (String) redisTemplate.opsForValue().get("ord:790");
+
+    }
 
 }

@@ -34,11 +34,32 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  redis:
+    host: 47.98.249.203
+    port: 6379
+    password: 123321
+    database: 1
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+
+
 
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com/like4u/papermanager/pojo
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+
+
+
+
+
 
 
 
