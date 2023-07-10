@@ -21,4 +21,5 @@ public class LoginConfig {
     public static final int PASSWORD_MAX_LENGTH = 20;
     public static final String CAPTCHA_CODE_KEY="verifyCode:";
 
+    public static final String LOGIN_USER_KEY = "login_user_key";
 }

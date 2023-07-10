@@ -53,4 +53,12 @@ public class GlobalExceptionHandler {
         return AjaxResult.error(e.getMessage());
     }
 
+    @ExceptionHandler(value = {UserPasswordNotMatchException.class})
+    public AjaxResult handleUserPasswordNotMatchException(UserPasswordNotMatchException e){
+        if (log.isErrorEnabled()) {
+            log.warn(e.getMessage(), e);
+        }
+        return AjaxResult.error(e.getMessage());
+    }
+
 }

@@ -41,10 +41,11 @@ public class CaptchaController {
 
 
     @GetMapping("/captchaImage")
-    public AjaxResult getCode(HttpServletResponse response){
+    public AjaxResult getCode(){
         AjaxResult ajax = AjaxResult.success();
 
         UUID uuid = UUID.randomUUID();
+
         String verifyKey = LoginConfig.CAPTCHA_CODE_KEY + uuid;
 
 

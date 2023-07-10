@@ -43,6 +43,11 @@ public class User {
     private String code;
     @TableField(exist = false)
     private String token;
+    @TableField(value = "login_data")
+    private Long loginTime;
+    @TableField(exist = false)
+    private Long expireTime;
+
 
 
 

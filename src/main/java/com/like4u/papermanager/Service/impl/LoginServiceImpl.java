@@ -3,12 +3,14 @@ package com.like4u.papermanager.Service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.like4u.papermanager.Mapper.LoginMapper;
 import com.like4u.papermanager.Service.LoginService;
+import com.like4u.papermanager.Service.TokenService;
 import com.like4u.papermanager.common.AjaxResult;
 import com.like4u.papermanager.common.HttpStatus;
 import com.like4u.papermanager.common.RedisCache;
 import com.like4u.papermanager.config.LoginConfig;
 import com.like4u.papermanager.exception.CaptchaException;
 import com.like4u.papermanager.exception.CaptchaExpireException;
+import com.like4u.papermanager.exception.UserPasswordNotMatchException;
 import com.like4u.papermanager.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,10 @@ public class LoginServiceImpl implements LoginService {
     LoginMapper loginMapper;
     @Autowired
     RedisCache redisCache;
+    @Autowired
+    private TokenService tokenService;
     @Override
-    public AjaxResult login(User user) {
+    public String login(User user) {
         //验证码校验
 
         validateCaptcha(user.getUsername(),user.getCode(),user.getUuid());
@@ -38,10 +42,12 @@ public class LoginServiceImpl implements LoginService {
                         .eq(User::getPassword,user.getPassword());
 
         if ( loginMapper.selectOne(wrapper)==null){
-            return AjaxResult.error(HttpStatus.ERROR,"账号或密码错误");
+            throw new UserPasswordNotMatchException();
         }
 
-        return AjaxResult.success();
+        String token = tokenService.createToken(user);
+
+        return token;
 
     }
 

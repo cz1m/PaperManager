@@ -11,5 +11,5 @@ import com.like4u.papermanager.pojo.User;
 
 public interface LoginService {
 
-    AjaxResult login(User user);
+    String login(User user);
 }
