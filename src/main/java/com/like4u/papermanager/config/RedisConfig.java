@@ -1,33 +1,35 @@
 package com.like4u.papermanager.config;
 
+import com.like4u.papermanager.common.FastJsonRedisSerializer;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
+
     @Bean
-    /**
-     * 修改Template 默认的序列化规则，使其能正确的将中文进行序列化
-     * */
-    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory)
+    @SuppressWarnings(value = { "unchecked", "rawtypes" })
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory)
     {
-        RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
 
-        redisTemplate.setConnectionFactory(lettuceConnectionFactory);
-        //设置key序列化方式string
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        //设置value的序列化方式json，使用GenericJackson2JsonRedisSerializer替换默认序列化
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        FastJsonRedisSerializer serializer = new FastJsonRedisSerializer(Object.class);
 
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        // 使用StringRedisSerializer来序列化和反序列化redis的key值
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
 
-        redisTemplate.afterPropertiesSet();
+        // Hash的key也采用StringRedisSerializer的序列化方式
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
 
-        return redisTemplate;
+        template.afterPropertiesSet();
+        return template;
     }
 }
+

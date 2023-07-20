@@ -22,4 +22,11 @@ public class LoginConfig {
     public static final String CAPTCHA_CODE_KEY="verifyCode:";
 
     public static final String LOGIN_USER_KEY = "login_user_key";
+    /**
+     * 登录用户编号 redis key
+     */
+    public static final String LOGIN_USERID_KEY = "login_userid:";
+
+
+
 }

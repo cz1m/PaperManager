@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MultiValueMap;
@@ -55,6 +56,7 @@ public class PaperController {
     /**
      * 查询全部
      * */
+    @PreAuthorize("hasAuthority('system:paper:query')")
     @GetMapping("/paper")
     public String getPaper(Model model){
         List<Paper> papers= paperService.getAllPaper();
@@ -311,6 +313,7 @@ public class PaperController {
 
 
     }
+    @PreAuthorize("hasAuthority('system')")
     @RequestMapping("/paper/info")
     public String paperInfo(Model model){
         //todo:获取及格的（60-85）的论文数量，优秀 的论文数量>=85,论文总数

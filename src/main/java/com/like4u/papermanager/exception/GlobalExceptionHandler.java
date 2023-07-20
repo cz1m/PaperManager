@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -60,5 +63,11 @@ public class GlobalExceptionHandler {
         }
         return AjaxResult.error(e.getMessage());
     }
+    @ExceptionHandler(ServiceException.class)
+    public AjaxResult handleServiceException(ServiceException e, HttpServletRequest request){
+        Integer code = e.getCode();
+        return !Objects.isNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
+    }
+
 
 }

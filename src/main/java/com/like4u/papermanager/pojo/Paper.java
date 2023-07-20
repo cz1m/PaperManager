@@ -26,6 +26,7 @@ public class Paper {
     private String author;
     private String advisor;
     private String src;
+    @TableField(value = "downloadTime")
     private Integer downloadTime;
     private String uid;
     @TableField(exist = false)

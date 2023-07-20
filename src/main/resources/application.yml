@@ -49,7 +49,7 @@ spring:
 
 mybatis-plus:
   configuration:
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com/like4u/papermanager/pojo
 
@@ -64,6 +64,8 @@ token:
   secret: abcdefghijklmnopqrstuvwxyz
   # 令牌有效期（默认30分钟）
   expireTime: 30
+  #单用户登录 不允许重复登录true  允许重复登录 false
+  soloLogin: true
 
 
 
