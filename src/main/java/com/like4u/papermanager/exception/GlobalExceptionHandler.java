@@ -69,5 +69,13 @@ public class GlobalExceptionHandler {
         return !Objects.isNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
     }
 
+    @ExceptionHandler(SendMailFailException.class)
+    public AjaxResult handleSendMailFailException(SendMailFailException e){
+        if (log.isErrorEnabled()) {
+            log.warn(e.getMessage(), e);
+        }
+        return AjaxResult.error(e.getMessage());
+    }
+
 
 }

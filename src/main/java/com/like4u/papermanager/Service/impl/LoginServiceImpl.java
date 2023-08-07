@@ -2,8 +2,7 @@ package com.like4u.papermanager.Service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.like4u.papermanager.Mapper.LoginMapper;
-import com.like4u.papermanager.Service.LoginService;
-import com.like4u.papermanager.Service.TokenService;
+import com.like4u.papermanager.Service.*;
 import com.like4u.papermanager.common.AjaxResult;
 import com.like4u.papermanager.common.HttpStatus;
 import com.like4u.papermanager.common.RedisCache;
@@ -22,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,16 +37,23 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     LoginMapper loginMapper;
     @Autowired
+    ConfigService configService;
+    @Autowired
     RedisCache redisCache;
     @Autowired
     private TokenService tokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private CaptchaService captchaService;
     @Override
     public String login(User user) {
         //验证码校验
 
-        validateCaptcha(user.getUsername(),user.getCode(),user.getUuid());
+        captchaService.validateCaptcha(user.getCode(),user.getUuid());
         Authentication authentication = null;
 
         try {
@@ -68,15 +75,7 @@ public class LoginServiceImpl implements LoginService {
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
 
         if (soloLogin) {
-            // 如果用户不允许多终端同时登录，清除缓存信息
-            String userIdKey = LoginConfig.LOGIN_USERID_KEY + loginUser.getUser().getUserId();
-            String userKey = redisCache.getCacheObject(userIdKey);
-
-            //如果 查出来的不是空的，就说明用户已经登录了，要踢人下线了
-            if (userKey!=null) {
-                redisCache.deleteObject(userIdKey);
-                redisCache.deleteObject(userKey);
-            }
+            multipleUserForbid(loginUser);
         }
 
 
@@ -98,26 +97,40 @@ public class LoginServiceImpl implements LoginService {
         return new AjaxResult(200,"注销成功");
     }
 
-    /***
-     *
-     * @param username 用户名
-     * @param code 验证码
-     * @param uuid 验证码的标识
-     */
+    @Override
+    public String loginByEmail(User user) {
 
-    private void validateCaptcha(String username, String code, String uuid) {
+        captchaService.validateMailCode(user.getCode(), user.getEmail());
 
-        String verifyKey= LoginConfig.CAPTCHA_CODE_KEY+uuid;
-        String captcha = redisCache.getCacheObject(verifyKey);
-        if (captcha==null){
-            throw new CaptchaExpireException();
-        }
-        if (!code.equalsIgnoreCase(captcha))
-        {
-            throw new CaptchaException();
+        LoginUser loginUser = (LoginUser) userDetailsService.loadUserByEmail(user.getUsername(), user.getEmail());
+
+        if (soloLogin) {
+           multipleUserForbid(loginUser);
         }
 
+        String token = tokenService.createToken(loginUser);
+
+        return token;
     }
+
+
+    /**
+     * 禁止统一账户多处登录
+     * @param loginUser 用户信息
+     */
+    public void multipleUserForbid(LoginUser loginUser){
+        // 如果用户不允许多终端同时登录，清除缓存信息
+            String userIdKey = LoginConfig.LOGIN_USERID_KEY + loginUser.getUser().getUserId();
+            String userKey = redisCache.getCacheObject(userIdKey);
+
+            //如果 查出来的不是空的，就说明用户已经登录了，要踢人下线了
+            if (userKey!=null) {
+                redisCache.deleteObject(userIdKey);
+                redisCache.deleteObject(userKey);
+            }
+        }
+
+
 
 
 }

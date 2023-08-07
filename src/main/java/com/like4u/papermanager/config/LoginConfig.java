@@ -26,6 +26,7 @@ public class LoginConfig {
      * 登录用户编号 redis key
      */
     public static final String LOGIN_USERID_KEY = "login_userid:";
+    public static final String MAIL_CODE_KEY="mailCode:";
 
 
 

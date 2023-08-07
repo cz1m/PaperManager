@@ -37,4 +37,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new LoginUser(user, list);
 
     }
+
+    public UserDetails loadUserByEmail(String username,String email) throws UsernameNotFoundException{
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, username)
+                .eq(User::getEmail,email);
+        User user = loginMapper.selectOne(wrapper);
+        if (user == null) {
+            throw new UsernameNotFoundException("用户不存在");
+        }List<String> list = menuMapper.selectPermsByUserId(user.getUserId());
+        return new LoginUser(user, list);
+    }
 }

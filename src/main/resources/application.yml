@@ -1,7 +1,11 @@
 server:
-  port: 8090
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
 
 spring:
+  profiles:
+    #active: pro
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -16,7 +20,6 @@ spring:
         login-password: 123456
         login-username: admin
         reset-enable: false
-
       web-stat-filter:
         enabled: true
         url-pattern: /*
@@ -44,6 +47,18 @@ spring:
         max-active: 8
         max-idle: 8
         min-idle: 0
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: dingzhen2001@qq.com
+    password: nyfweubxduhfbcbf
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+        debug: true
 
 
 
@@ -67,6 +82,20 @@ token:
   #单用户登录 不允许重复登录true  允许重复登录 false
   soloLogin: true
 
+
+
+knife4j:
+  enable: true
+  openapi:
+    title: 论文管理系统
+    description: 这是一份用于管理后台的接口文档
+    email: 15563451092@163.com
+    concat: exception
+    url: https://127.0.0.1:8090/doc.html
+    version: v4.0
+    license: Apache 2.0
+    license-url: https://stackoverflow.com/
+    terms-of-service-url: https://stackoverflow.com/
 
 
 

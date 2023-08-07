@@ -16,4 +16,6 @@ import java.util.List;
 public interface MenuMapper extends BaseMapper<Menu> {
 
     List<String> selectPermsByUserId(@Param("userId") Long userId);
+
+    void  addUserWithVisitRole(@Param("userId")Long userId);
 }

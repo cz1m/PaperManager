@@ -14,4 +14,7 @@ public interface LoginService {
     String login(User user);
 
     AjaxResult logout();
+
+
+    String loginByEmail(User user);
 }

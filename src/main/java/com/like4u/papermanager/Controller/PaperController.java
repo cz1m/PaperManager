@@ -6,6 +6,9 @@ import com.like4u.papermanager.pojo.Paper;
 
 import com.like4u.papermanager.pojo.PaperDownload;
 import com.like4u.papermanager.pojo.TongJi;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -33,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
+@Api("论文管理")
 public class PaperController {
     @Autowired
     private PaperService paperService;
@@ -43,21 +47,14 @@ public class PaperController {
         return "index";
     }
 
-    //测试用
-    @GetMapping("getCookie")
-    @ResponseBody
-    public String getCookie(HttpServletResponse response){
-        Cookie cookie=new Cookie("username","987987987");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
-        return "set cookie success!";
-    }
+
     //测试用注解
     /**
      * 查询全部
      * */
     @PreAuthorize("hasAuthority('system:paper:query')")
     @GetMapping("/paper")
+    @ApiOperation("查询全部论文")
     public String getPaper(Model model){
         List<Paper> papers= paperService.getAllPaper();
         //Pages pages = paperService.getPaperPage();
@@ -70,6 +67,7 @@ public class PaperController {
     //分页查询
     @ResponseBody
     @GetMapping("/paper/page")
+    @ApiOperation("分页查询所有论文")
     public Pages getPaperByPage(@RequestParam(required = false) Integer page) {
         List<Paper> papers;
         if(page==null){
@@ -93,6 +91,7 @@ public class PaperController {
     }
     //添加paper
     @PostMapping("/paper")
+    @ApiOperation("添加论文")
     public String addPaper(Paper paper,
                            @RequestParam("file") MultipartFile multipartFile,
                            HttpSession httpSession) throws IOException {
@@ -117,8 +116,9 @@ public class PaperController {
     @GetMapping("/paper/update")
     //测试用注解，
     @ResponseBody
+    @ApiOperation("修改指定论文")
     public List<Paper> toUpdate(Model model,
-                           @CookieValue("username")String uid){
+                           @ApiParam(required = true) @CookieValue("username")String uid){
         List<Paper> papers= paperService.getUserByUid(uid);
         model.addAttribute("papers",papers);
         return papers;
@@ -128,6 +128,7 @@ public class PaperController {
 
     //按照id查询
     @GetMapping("/paper/{id}")
+    @ApiOperation("按照id查询论文")
     public String getPaperById(@PathVariable("id") Integer id,
                                Model model){
         Paper paper= paperService.getPaperById(id);
@@ -138,6 +139,7 @@ public class PaperController {
     }
     //修改paper
     @PutMapping("/paper")
+    @ApiOperation("修改论文")
     public String updatePaper(Paper paper,
                               @RequestParam("file") MultipartFile multipartFile,
                               HttpSession httpSession ) throws IOException {
@@ -170,6 +172,7 @@ public class PaperController {
 
     //删除paper
     @DeleteMapping("/paper/{id}")
+    @ApiOperation("根据id删除论文")
     public String deletePaper(@PathVariable("id") Integer id){
         paperService.deletePaper(id);
 
@@ -181,6 +184,7 @@ public class PaperController {
  * */
     @GetMapping("/readonline/{id}")
     @ResponseBody
+    @ApiOperation("根据id在线阅读论文")
     public String  test(@PathVariable("id")Integer id) throws IOException{
 
         String src = paperService.getSrcByID(id);
@@ -199,7 +203,8 @@ public class PaperController {
 
 
     //下载
-    @RequestMapping("/download/d")
+    @GetMapping("/download/d")
+    @ApiOperation("论文下载")
     public ResponseEntity<byte[]> testResponseEntity(HttpSession session,
                                                      @RequestBody Paper paper,
                                                      @CookieValue("username") String username) throws
@@ -314,7 +319,8 @@ public class PaperController {
 
     }
     @PreAuthorize("hasAuthority('system')")
-    @RequestMapping("/paper/info")
+    @GetMapping("/paper/info")
+    @ApiOperation("论文的优秀率、合格率统计")
     public String paperInfo(Model model){
         //todo:获取及格的（60-85）的论文数量，优秀 的论文数量>=85,论文总数
         Long CPaper=paperService.getCPaper();
@@ -327,6 +333,7 @@ public class PaperController {
     //根据//title,author,teacher进行条件查询
     @ResponseBody
     @PostMapping("/paper/search")
+    @ApiOperation("根据title,author,teacher进行条件查询")
     public Pages searchPaper(@RequestBody Paper paper){
         Pages pages;
         System.out.println(paper);

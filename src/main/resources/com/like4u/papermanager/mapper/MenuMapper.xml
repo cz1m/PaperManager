@@ -14,4 +14,10 @@
         sys_menu sm on srm.menu_id  =sm.id
         where sur.user_id  =#{userId};
     </select>
+
+    <insert id="addUserWithVisitRole">
+        insert into
+        sys_user_role(user_id,role_id)
+        values (#{userId},2)
+    </insert>
 </mapper>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>邮件</title>
+</head>
+<body style="text-align: center;padding: 14px">
+<div style="font-size: 34px;color: #66a9bd">邮箱激活</div>
+<P>欢迎您注册体验我们的后台管理系统，请不要把验证码告知任何人，如果您没有注册我们的服务，请忽略这条邮件</P>
+
+<div>您的注册信息是：
+    <br><br>
+    <div>用户名:</div>
+    <div th:text="${user.username}"></div>
+    <br>
+
+    <div>用户性别:</div>
+    <div th:text="${user.getSex()}"></div>
+    <br>
+    <p>验证码：</p>
+    <p th:text="${verityCode}"></p>
+
+
+</div>
+
+</body>
+</html>
