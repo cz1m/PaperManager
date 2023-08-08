@@ -56,7 +56,6 @@ public class CaptchaServiceImpl implements CaptchaService {
                 throw new CaptchaException("验证码不正确");
             }else redisCache.deleteObject(verifyKey);
         }
-
     }
 
 
