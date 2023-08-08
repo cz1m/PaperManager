@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -24,7 +25,8 @@ public class CaptchaConfig {
     public DefaultKaptcha getKaptchaBean() throws IOException{
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties =new Properties();
-        FileInputStream is = new FileInputStream("src/main/resources/captcha/captcha.properties");
+       // FileInputStream is = new FileInputStream("src/main/resources/captcha/captcha.properties");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("src/main/resources/captcha/captcha.properties");
         properties.load(is);
         Config config=new Config(properties);
         defaultKaptcha.setConfig(config);
@@ -34,10 +36,26 @@ public class CaptchaConfig {
     public DefaultKaptcha getKaptchaBeanMath() throws IOException {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties =new Properties();
-        properties.load(Files.newInputStream(Paths.get("src/main/resources/captcha/captchaMath.properties")));
-        Config config=new Config(properties);
-        defaultKaptcha.setConfig(config);
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("captcha/captchaMath.properties")) {
+            properties.load(inputStream);
+            properties.load(inputStream);
+            Config config=new Config(properties);
+            defaultKaptcha.setConfig(config);
+
+        } catch (IOException e) {
+            // 处理异常
+            e.printStackTrace();
+        }
         return defaultKaptcha;
+
+   //     properties.load(Files.newInputStream(Paths.get("src/main/resources/captcha/captchaMath.properties")));
+
+        //Properties properties = new Properties();
+        //try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("captcha/captchaMath.properties")) {
+        //    properties.load(inputStream);
+        //} catch (IOException e) {
+        //    // 处理异常
+        //}
     }
 
 
