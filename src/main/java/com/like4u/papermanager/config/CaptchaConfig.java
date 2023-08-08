@@ -26,6 +26,7 @@ public class CaptchaConfig {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties =new Properties();
        // FileInputStream is = new FileInputStream("src/main/resources/captcha/captcha.properties");
+
         InputStream is = getClass().getClassLoader().getResourceAsStream("captcha/captcha.properties");
         properties.load(is);
         Config config=new Config(properties);

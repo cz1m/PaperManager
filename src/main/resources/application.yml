@@ -60,7 +60,9 @@ spring:
             class: javax.net.ssl.SSLSocketFactory
         debug: true
 
-
+logging:
+  file:
+    path: /logs
 
 mybatis-plus:
   configuration:
